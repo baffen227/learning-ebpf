@@ -21,10 +21,8 @@ int hello(void *ctx) {
    
    bpf_get_current_comm(&data.command, sizeof(data.command));
 
-   if (data.pid & 0x1)
-       bpf_probe_read_kernel(&data.message, sizeof(data.message), message_odd); 
-   else
-       bpf_probe_read_kernel(&data.message, sizeof(data.message), message_even); 
+   bpf_probe_read_kernel(&data.message, sizeof(data.message),
+       (data.pid & 1) ? message_odd : message_even);
  
    output.perf_submit(ctx, &data, sizeof(data)); 
  
